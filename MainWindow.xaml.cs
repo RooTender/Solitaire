@@ -23,6 +23,7 @@ namespace Solitaire
         public MainWindow()
         {
             InitializeComponent();
+            
         }
     }
 }
