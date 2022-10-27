@@ -21,22 +21,19 @@ namespace Solitaire
 
             for (var column = 0; column < BoardEdgeSize; ++column)
             {
-                var columnDefinition = new ColumnDefinition
+                grid.ColumnDefinitions.Add(new ColumnDefinition
                 {
-                    Name = "col" + column
-                };
-
-                grid.ColumnDefinitions.Add(columnDefinition);
+                    Name = "col" + column,
+                    
+                });
             }
 
             for (var row = 0; row < BoardEdgeSize; ++row)
             {
-                var rowDefinition = new RowDefinition
+                grid.RowDefinitions.Add(new RowDefinition
                 {
                     Name = "row" + row
-                };
-
-                grid.RowDefinitions.Add(rowDefinition);
+                });
             }
 
             return grid;
