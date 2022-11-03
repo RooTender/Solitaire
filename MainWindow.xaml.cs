@@ -1,29 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using JetBrains.Annotations;
 
 namespace Solitaire
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    [UsedImplicitly]
+    public partial class MainWindow
     {
         public MainWindow()
         {
             InitializeComponent();
-            
+
+            var panel = new DockPanel
+            {
+                Height = double.NaN,
+                VerticalAlignment = VerticalAlignment.Stretch
+            };
+
+            var menuBar = new Grid
+            {
+                VerticalAlignment = VerticalAlignment.Top,
+                Height = 30,
+                Background = Brushes.FloralWhite
+            };
+            panel.Children.Add(menuBar);
+            DockPanel.SetDock(menuBar, Dock.Top);
+
+            var board = new Board();
+            panel.Children.Add(board.GetGrid());
+
+            Content = panel;
         }
     }
 }
