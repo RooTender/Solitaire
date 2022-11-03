@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace Solitaire
 {
@@ -23,8 +25,7 @@ namespace Solitaire
             {
                 grid.ColumnDefinitions.Add(new ColumnDefinition
                 {
-                    Name = "col" + column,
-                    
+                    Name = "col" + column
                 });
             }
 
