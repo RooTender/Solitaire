@@ -104,9 +104,61 @@ namespace Solitaire.Game
 
                 if (TryToMove(_currentlyMarkedField, field.GetLocation()))
                 {
-
+                    CheckGameState();
                 }
             }
+        }
+
+        private void CheckGameState()
+        {
+            var pawns = 0;
+            foreach (var field in _fields)
+            {
+                if (field == null || field.State == FieldState.Available)
+                {
+                    continue;
+                }
+
+                ++pawns;
+
+                if (HasLegalMove(field))
+                {
+                    return;
+                }
+            }
+
+            if (pawns == 1)
+            {
+                // Win
+                throw new Exception("WIN!!!");
+            }
+
+            // Lose
+            throw new Exception("LOSS!!!");
+        }
+
+        private bool HasLegalMove(Field field)
+        {
+            var x = field.GetLocation().X;
+            var y = field.GetLocation().Y;
+
+            var isMoveUpLegal =
+                IsFieldLegal(x, y - 1) && _fields[x, y - 1]!.State != FieldState.Available &&
+                IsFieldLegal(x, y - 2) && _fields[x, y - 2]!.State == FieldState.Available;
+
+            var isMoveDownLegal =
+                IsFieldLegal(x, y + 1) && _fields[x, y + 1]!.State != FieldState.Available &&
+                IsFieldLegal(x, y + 2) && _fields[x, y + 2]!.State == FieldState.Available;
+
+            var isMoveLeftLegal =
+                IsFieldLegal(x - 1, y) && _fields[x - 1, y]!.State != FieldState.Available &&
+                IsFieldLegal(x - 2, y) && _fields[x - 2, y]!.State == FieldState.Available;
+
+            var isMoveRightLegal =
+                IsFieldLegal(x + 1, y) && _fields[x + 1, y]!.State != FieldState.Available &&
+                IsFieldLegal(x + 2, y) && _fields[x + 2, y]!.State == FieldState.Available;
+
+            return isMoveUpLegal || isMoveDownLegal || isMoveLeftLegal || isMoveRightLegal;
         }
 
         private bool TryToMove(Point? currentLocation, Point nextLocation)
