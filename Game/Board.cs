@@ -1,6 +1,4 @@
 ﻿using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Shapes;
 
 namespace Solitaire.Game
 {
@@ -39,16 +37,13 @@ namespace Solitaire.Game
                     {
                         continue;
                     }
-                    
-                    var test = new Ellipse
-                    {
-                        Fill = Brushes.Beige
-                    };
 
-                    Grid.SetColumn(test, x);
-                    Grid.SetRow(test, y);
+                    var field = new Field(x, y, FieldShapes.Circle);
 
-                    grid.Children.Add(test);
+                    Grid.SetColumn(field.GetElement(), x);
+                    Grid.SetRow(field.GetElement(), y);
+
+                    grid.Children.Add(field.GetElement());
                 }
             }
 
