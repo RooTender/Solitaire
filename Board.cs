@@ -1,18 +1,21 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using Rectangle = System.Windows.Shapes.Rectangle;
 
 namespace Solitaire
 {
     internal class Board
     {
         private const uint BoardEdgeSize = 7;
-        private readonly bool[,] _legalFields;
+        //private readonly bool[,] _legalFields;
 
-        public Board()
+        /*public Board()
         {
             _legalFields = GetLegalFields();
-        }
+        }*/
 
         public Grid GetGrid()
         {
@@ -37,10 +40,29 @@ namespace Solitaire
                 });
             }
 
+            for (var y = 0; y < BoardEdgeSize; ++y)
+            {
+                for (var x = 0; x < BoardEdgeSize; ++x)
+                {
+                    if (!IsFieldLegal(x, y))
+                    {
+                        continue;
+                    }
+
+                    var test = new Rectangle
+                    {
+                        Fill = Brushes.Aqua
+                    };
+
+                    Grid.SetColumn(test, x);
+                    Grid.SetRow(test, y);
+                }
+            }
+
             return grid;
         }
 
-        private static bool[,] GetLegalFields()
+        /*private static bool[,] GetLegalFields()
         {
             var legalFields = new bool[BoardEdgeSize, BoardEdgeSize];
 
@@ -53,18 +75,17 @@ namespace Solitaire
             }
 
             return legalFields;
-        }
+        }*/
 
         private static bool IsFieldLegal(int x, int y)
         {
             const int illegalCornerEdgeSize = 2;
-            var isIllegal = 
-                x < illegalCornerEdgeSize || 
-                y < illegalCornerEdgeSize || 
-                x > BoardEdgeSize - illegalCornerEdgeSize ||
-                y > BoardEdgeSize - illegalCornerEdgeSize;
+            var atTopLeftCorner     = x < illegalCornerEdgeSize && y < illegalCornerEdgeSize;
+            var atTopRightCorner    = x > BoardEdgeSize - illegalCornerEdgeSize && y < illegalCornerEdgeSize;
+            var atBottomLeftCorner  = x < illegalCornerEdgeSize && y > BoardEdgeSize - illegalCornerEdgeSize;
+            var atBottomRightCorner = x > BoardEdgeSize - illegalCornerEdgeSize && y > BoardEdgeSize - illegalCornerEdgeSize;
 
-            return !isIllegal;
+            return !atTopLeftCorner && !atTopRightCorner && !atBottomLeftCorner && !atBottomRightCorner;
         }
     }
 }
