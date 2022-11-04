@@ -32,7 +32,7 @@ namespace Solitaire
             DockPanel.SetDock(menuBar, Dock.Top);
 
             var board = new Board();
-            panel.Children.Add(board.GetGrid());
+            panel.Children.Add(board.GetBoard());
 
             Content = panel;
         }

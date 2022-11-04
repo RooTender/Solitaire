@@ -14,12 +14,19 @@ namespace Solitaire.Game
         Circle
     }
 
+    public enum FieldState
+    {
+        Default = 0,
+        Player,
+        Available,
+    }
+
     public class Field
     {
         private readonly Point _location;
         private readonly Shape _shape;
-        private readonly SolidColorBrush _playerColor;
-        private bool _isPlayer;
+        private FieldState _state;
+        private bool _isSelected;
         
         public Field(int x, int y, FieldShapes shape)
         {
@@ -30,24 +37,26 @@ namespace Solitaire.Game
                 FieldShapes.Circle => new Ellipse(),
                 _ => throw new ArgumentOutOfRangeException(nameof(shape), shape, "The given shape is undefined!")
             };
-            _playerColor = Brushes.Crimson;
-            _isPlayer = false;
-
-            _shape.Fill = Brushes.Black;
+            _state = FieldState.Default;
 
             _shape.MouseEnter += OnMouseEnter;
             _shape.MouseLeave += OnMouseLeave;
-            _shape.MouseDown  += OnMouseDown;
+
+            SetFieldColor();
         }
 
-        public bool IsPlayer
+        public Point GetLocation() => _location;
+
+        public bool IsSelected() => _isSelected;
+
+        public FieldState State 
         {
-            get => _isPlayer;
+            get => _state;
 
             set
             {
-                _isPlayer = value;
-                _shape.Fill = (_isPlayer) ? _playerColor : Brushes.Black;
+                _state = value;
+                SetFieldColor();
             }
         }
 
@@ -56,28 +65,35 @@ namespace Solitaire.Game
             return _shape;
         }
 
-        private void OnMouseDown(object obj, MouseEventArgs e)
+        private void OnMouseEnter(object sender, MouseEventArgs e)
         {
-            _shape.Fill = (IsPlayer) ? Brushes.DeepPink : Brushes.Gray;
-        }
-
-        private void OnMouseEnter(object obj, MouseEventArgs e)
-        {
-            _shape.Fill = (IsPlayer) ? Brushes.DeepPink : Brushes.Gray;
-        }
-
-        /*private void ColorShapeBasedOnSituation()
-        {
-            if (IsPlayer)
+            _shape.Fill = _state switch
             {
+                FieldState.Default => Brushes.Gray,
+                FieldState.Player => Brushes.DeepPink,
+                FieldState.Available => Brushes.Aqua,
+                _ => Brushes.Transparent
+            };
 
-            }
-            else if ()
-        }*/
-        
-        private void OnMouseLeave(object obj, MouseEventArgs e)
+            _isSelected = true;
+        }
+
+        private void OnMouseLeave(object sender, MouseEventArgs e)
         {
-            _shape.Fill = (IsPlayer) ? _playerColor : Brushes.Black;
+            SetFieldColor();
+
+            _isSelected = false;
+        }
+
+        private void SetFieldColor()
+        {
+            _shape.Fill = _state switch
+            {
+                FieldState.Default => Brushes.Black,
+                FieldState.Player => Brushes.Crimson,
+                FieldState.Available => Brushes.Blue,
+                _ => Brushes.Transparent
+            };
         }
     }
 }
