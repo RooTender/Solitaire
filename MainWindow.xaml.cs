@@ -1,8 +1,8 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using JetBrains.Annotations;
+using Solitaire.Game;
 
 namespace Solitaire
 {
@@ -32,7 +32,7 @@ namespace Solitaire
             DockPanel.SetDock(menuBar, Dock.Top);
 
             var board = new Board();
-            panel.Children.Add(board.GetGrid());
+            panel.Children.Add(board.GetBoard());
 
             Content = panel;
         }
