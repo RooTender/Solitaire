@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Point = System.Drawing.Point;
@@ -9,17 +9,17 @@ namespace Solitaire.Game
     public class Board
     {
         private const uint BoardEdgeSize = 7;
-
         private readonly Grid _board;
         private readonly Field?[,] _fields;
-        
-        private Stack<Point> _playerPositionHistory;
+
+        private Stack<(Point, Point)> _gameHistory;
+        private Point? _currentlyMarkedField;
 
         public Board()
         {
             _board = new Grid();
             _fields = new Field?[BoardEdgeSize,BoardEdgeSize];
-            _playerPositionHistory = new Stack<Point>();
+            _gameHistory = new Stack<(Point, Point)>();
 
             Build();
         }
@@ -61,8 +61,7 @@ namespace Solitaire.Game
                     const uint centerOfTheBoard = BoardEdgeSize / 2;
                     if (x == centerOfTheBoard && y == centerOfTheBoard)
                     {
-                        field.State = FieldState.Player;
-                        _playerPositionHistory.Push(new Point(x, y));
+                        field.State = FieldState.Available;
                     }
 
                     _fields[x, y] = field;
@@ -71,23 +70,6 @@ namespace Solitaire.Game
             }
 
             _board.MouseDown += OnClick;
-
-            UpdateBoard();
-        }
-
-        private void UpdateBoard()
-        {
-            var playerPosition = _playerPositionHistory.Peek();
-
-            var x = playerPosition.X;
-            var y = playerPosition.Y;
-            
-            _fields[x, y]!.State = FieldState.Player;
-
-            if (IsFieldLegal(x + 2, y)) _fields[x + 2, y]!.State = FieldState.Available;
-            if (IsFieldLegal(x - 2, y)) _fields[x - 2, y]!.State = FieldState.Available;
-            if (IsFieldLegal(x, y - 2)) _fields[x, y - 2]!.State = FieldState.Available;
-            if (IsFieldLegal(x, y + 2)) _fields[x, y + 2]!.State = FieldState.Available;
         }
 
         private void OnClick(object sender, MouseButtonEventArgs e)
@@ -99,16 +81,72 @@ namespace Solitaire.Game
                     continue;
                 }
 
-                if (field.State != FieldState.Available)
+                if (_currentlyMarkedField != null && field.State == FieldState.Occupied)
                 {
-                    break;
+                    continue;
                 }
 
-                var fieldCoordinates = field.GetLocation();
-                _playerPositionHistory.Push(fieldCoordinates);
+                if (_currentlyMarkedField == null && field.State == FieldState.Occupied)
+                {
+                    _currentlyMarkedField = field.GetLocation();
+                    field.State = FieldState.Marked;
 
-                UpdateBoard();
+                    return;
+                }
+
+                if (_currentlyMarkedField == field.GetLocation() && field.State == FieldState.Marked)
+                {
+                    _currentlyMarkedField = null;
+                    field.State = FieldState.Occupied;
+
+                    return;
+                }
+
+                if (TryToMove(_currentlyMarkedField, field.GetLocation()))
+                {
+
+                }
             }
+        }
+
+        private bool TryToMove(Point? currentLocation, Point nextLocation)
+        {
+            if (currentLocation == null)
+            {
+                return false;
+            }
+
+            var current = currentLocation.Value;
+            var middle = new Point((current.X + nextLocation.X) / 2, (current.Y + nextLocation.Y) / 2);
+
+            if (Math.Abs(current.X - nextLocation.X) > 2 || Math.Abs(current.Y - nextLocation.Y) > 2)
+            {
+                return false;
+            }
+
+            var currentField = _fields[current.X, current.Y];
+            var middleField = _fields[middle.X, middle.Y];
+            var finalField = _fields[nextLocation.X, nextLocation.Y];
+
+            if (currentField == null || middleField == null || finalField == null)
+            {
+                return false;
+            }
+
+            if (middleField.State != FieldState.Occupied || finalField.State != FieldState.Available)
+            {
+                return false;
+            }
+
+            _currentlyMarkedField = null;
+
+            currentField.State = FieldState.Available;
+            middleField.State = FieldState.Available;
+            finalField.State = FieldState.Occupied;
+
+            _gameHistory.Push((currentField.GetLocation(), finalField.GetLocation()));
+
+            return true;
         }
 
         private static bool IsFieldLegal(int x, int y)

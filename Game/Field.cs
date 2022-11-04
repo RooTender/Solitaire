@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -16,9 +14,9 @@ namespace Solitaire.Game
 
     public enum FieldState
     {
-        Default = 0,
-        Player,
+        Occupied = 0,
         Available,
+        Marked
     }
 
     public class Field
@@ -37,7 +35,7 @@ namespace Solitaire.Game
                 FieldShapes.Circle => new Ellipse(),
                 _ => throw new ArgumentOutOfRangeException(nameof(shape), shape, "The given shape is undefined!")
             };
-            _state = FieldState.Default;
+            _state = FieldState.Occupied;
 
             _shape.MouseEnter += OnMouseEnter;
             _shape.MouseLeave += OnMouseLeave;
@@ -69,9 +67,9 @@ namespace Solitaire.Game
         {
             _shape.Fill = _state switch
             {
-                FieldState.Default => Brushes.Gray,
-                FieldState.Player => Brushes.DeepPink,
-                FieldState.Available => Brushes.Aqua,
+                FieldState.Occupied => Brushes.Gray,
+                FieldState.Available => Brushes.WhiteSmoke,
+                FieldState.Marked => Brushes.Gold,
                 _ => Brushes.Transparent
             };
 
@@ -89,9 +87,9 @@ namespace Solitaire.Game
         {
             _shape.Fill = _state switch
             {
-                FieldState.Default => Brushes.Black,
-                FieldState.Player => Brushes.Crimson,
-                FieldState.Available => Brushes.Blue,
+                FieldState.Occupied => Brushes.Black,
+                FieldState.Available => Brushes.WhiteSmoke,
+                FieldState.Marked => Brushes.Gold,
                 _ => Brushes.Transparent
             };
         }
