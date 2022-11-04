@@ -1,27 +1,18 @@
-﻿using System;
-using System.Drawing;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Media;
-using Rectangle = System.Windows.Shapes.Rectangle;
+using System.Windows.Shapes;
 
-namespace Solitaire
+namespace Solitaire.Game
 {
     internal class Board
     {
         private const uint BoardEdgeSize = 7;
-        //private readonly bool[,] _legalFields;
-
-        /*public Board()
-        {
-            _legalFields = GetLegalFields();
-        }*/
 
         public Grid GetGrid()
         {
             var grid = new Grid
             {
-                ShowGridLines = true
+                //ShowGridLines = true
             };
 
             for (var column = 0; column < BoardEdgeSize; ++column)
@@ -48,42 +39,29 @@ namespace Solitaire
                     {
                         continue;
                     }
-
-                    var test = new Rectangle
+                    
+                    var test = new Ellipse
                     {
-                        Fill = Brushes.Aqua
+                        Fill = Brushes.Beige
                     };
 
                     Grid.SetColumn(test, x);
                     Grid.SetRow(test, y);
+
+                    grid.Children.Add(test);
                 }
             }
 
             return grid;
         }
 
-        /*private static bool[,] GetLegalFields()
-        {
-            var legalFields = new bool[BoardEdgeSize, BoardEdgeSize];
-
-            for (var y = 0; y < BoardEdgeSize; ++y)
-            {
-                for (var x = 0; x < BoardEdgeSize; ++x)
-                {           
-                    legalFields[x, y] = IsFieldLegal(x, y);
-                }
-            }
-
-            return legalFields;
-        }*/
-
         private static bool IsFieldLegal(int x, int y)
         {
             const int illegalCornerEdgeSize = 2;
-            var atTopLeftCorner     = x < illegalCornerEdgeSize && y < illegalCornerEdgeSize;
-            var atTopRightCorner    = x > BoardEdgeSize - illegalCornerEdgeSize && y < illegalCornerEdgeSize;
-            var atBottomLeftCorner  = x < illegalCornerEdgeSize && y > BoardEdgeSize - illegalCornerEdgeSize;
-            var atBottomRightCorner = x > BoardEdgeSize - illegalCornerEdgeSize && y > BoardEdgeSize - illegalCornerEdgeSize;
+            var atTopLeftCorner = x < illegalCornerEdgeSize && y < illegalCornerEdgeSize;
+            var atTopRightCorner = x > BoardEdgeSize - illegalCornerEdgeSize - 1 && y < illegalCornerEdgeSize;
+            var atBottomLeftCorner = x < illegalCornerEdgeSize && y > BoardEdgeSize - illegalCornerEdgeSize - 1;
+            var atBottomRightCorner = x > BoardEdgeSize - illegalCornerEdgeSize - 1 && y > BoardEdgeSize - illegalCornerEdgeSize - 1;
 
             return !atTopLeftCorner && !atTopRightCorner && !atBottomLeftCorner && !atBottomRightCorner;
         }
