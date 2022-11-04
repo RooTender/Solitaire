@@ -1,18 +1,18 @@
-﻿using System.Windows.Controls;
+﻿using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Controls;
 
 namespace Solitaire.Game
 {
-    internal class Board
+    public class Board
     {
         private const uint BoardEdgeSize = 7;
         private bool[,] _isFieldLegal = new bool[BoardEdgeSize,BoardEdgeSize];
+        private Stack<Point> _playerPositionHistory;
 
         public Grid GetGrid()
         {
-            var grid = new Grid
-            {
-                //ShowGridLines = true
-            };
+            var grid = new Grid();
 
             for (var column = 0; column < BoardEdgeSize; ++column)
             {
@@ -42,7 +42,7 @@ namespace Solitaire.Game
                         continue;
                     }
 
-                    var field = new Field(x, y, FieldShapes.Circle, ref _isFieldLegal);
+                    var field = new Field(x, y, FieldShapes.Circle);
 
                     Grid.SetColumn(field.GetElement(), x);
                     Grid.SetRow(field.GetElement(), y);

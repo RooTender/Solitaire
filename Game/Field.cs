@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -17,11 +18,10 @@ namespace Solitaire.Game
     {
         private readonly Point _location;
         private readonly Shape _shape;
-        private readonly bool[,] _fieldStatus;
         private readonly SolidColorBrush _playerColor;
         private bool _isPlayer;
         
-        public Field(int x, int y, FieldShapes shape, ref bool[,] isFieldLegal)
+        public Field(int x, int y, FieldShapes shape)
         {
             _location = new Point(x, y);
             _shape = shape switch
@@ -30,7 +30,6 @@ namespace Solitaire.Game
                 FieldShapes.Circle => new Ellipse(),
                 _ => throw new ArgumentOutOfRangeException(nameof(shape), shape, "The given shape is undefined!")
             };
-            _fieldStatus = isFieldLegal;
             _playerColor = Brushes.Crimson;
             _isPlayer = false;
 
@@ -38,7 +37,7 @@ namespace Solitaire.Game
 
             _shape.MouseEnter += OnMouseEnter;
             _shape.MouseLeave += OnMouseLeave;
-            //_shape.LayoutUpdated += Test;
+            _shape.MouseDown  += OnMouseDown;
         }
 
         public bool IsPlayer
@@ -57,22 +56,28 @@ namespace Solitaire.Game
             return _shape;
         }
 
+        private void OnMouseDown(object obj, MouseEventArgs e)
+        {
+            _shape.Fill = (IsPlayer) ? Brushes.DeepPink : Brushes.Gray;
+        }
+
         private void OnMouseEnter(object obj, MouseEventArgs e)
         {
             _shape.Fill = (IsPlayer) ? Brushes.DeepPink : Brushes.Gray;
         }
 
+        /*private void ColorShapeBasedOnSituation()
+        {
+            if (IsPlayer)
+            {
+
+            }
+            else if ()
+        }*/
+        
         private void OnMouseLeave(object obj, MouseEventArgs e)
         {
             _shape.Fill = (IsPlayer) ? _playerColor : Brushes.Black;
         }
-
-        /*private void Test(object? obj, EventArgs e)
-        {
-            if (IsPlayer)
-            {
-                _shape.Fill = _playerColor;
-            }
-        }*/
     }
 }
