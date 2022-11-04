@@ -5,6 +5,7 @@ namespace Solitaire.Game
     internal class Board
     {
         private const uint BoardEdgeSize = 7;
+        private bool[,] _isFieldLegal = new bool[BoardEdgeSize,BoardEdgeSize];
 
         public Grid GetGrid()
         {
@@ -33,15 +34,24 @@ namespace Solitaire.Game
             {
                 for (var x = 0; x < BoardEdgeSize; ++x)
                 {
+                    _isFieldLegal[x, y] = true;
+
                     if (!IsFieldLegal(x, y))
                     {
+                        _isFieldLegal[x, y] = false;
                         continue;
                     }
 
-                    var field = new Field(x, y, FieldShapes.Circle);
+                    var field = new Field(x, y, FieldShapes.Circle, ref _isFieldLegal);
 
                     Grid.SetColumn(field.GetElement(), x);
                     Grid.SetRow(field.GetElement(), y);
+
+                    const uint centerOfTheBoard = BoardEdgeSize / 2;
+                    if (x == centerOfTheBoard && y == centerOfTheBoard)
+                    {
+                        field.IsPlayer = true;
+                    }
 
                     grid.Children.Add(field.GetElement());
                 }

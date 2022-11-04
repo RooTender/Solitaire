@@ -17,8 +17,11 @@ namespace Solitaire.Game
     {
         private readonly Point _location;
         private readonly Shape _shape;
+        private readonly bool[,] _fieldStatus;
+        private readonly SolidColorBrush _playerColor;
+        private bool _isPlayer;
         
-        public Field(int x, int y, FieldShapes shape)
+        public Field(int x, int y, FieldShapes shape, ref bool[,] isFieldLegal)
         {
             _location = new Point(x, y);
             _shape = shape switch
@@ -27,15 +30,27 @@ namespace Solitaire.Game
                 FieldShapes.Circle => new Ellipse(),
                 _ => throw new ArgumentOutOfRangeException(nameof(shape), shape, "The given shape is undefined!")
             };
+            _fieldStatus = isFieldLegal;
+            _playerColor = Brushes.Crimson;
+            _isPlayer = false;
+
             _shape.Fill = Brushes.Black;
 
             _shape.MouseEnter += OnMouseEnter;
             _shape.MouseLeave += OnMouseLeave;
-
-            IsPlayer = false;
+            //_shape.LayoutUpdated += Test;
         }
 
-        public bool IsPlayer { get; set; }
+        public bool IsPlayer
+        {
+            get => _isPlayer;
+
+            set
+            {
+                _isPlayer = value;
+                _shape.Fill = (_isPlayer) ? _playerColor : Brushes.Black;
+            }
+        }
 
         public Shape GetElement() 
         {
@@ -44,12 +59,20 @@ namespace Solitaire.Game
 
         private void OnMouseEnter(object obj, MouseEventArgs e)
         {
-            _shape.Fill = Brushes.Gray;
+            _shape.Fill = (IsPlayer) ? Brushes.DeepPink : Brushes.Gray;
         }
 
         private void OnMouseLeave(object obj, MouseEventArgs e)
         {
-            _shape.Fill = Brushes.Black;
+            _shape.Fill = (IsPlayer) ? _playerColor : Brushes.Black;
         }
+
+        /*private void Test(object? obj, EventArgs e)
+        {
+            if (IsPlayer)
+            {
+                _shape.Fill = _playerColor;
+            }
+        }*/
     }
 }
