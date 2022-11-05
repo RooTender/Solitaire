@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using JetBrains.Annotations;
 using Solitaire.Game;
@@ -28,10 +30,37 @@ namespace Solitaire
                 Height = 30,
                 Background = Brushes.FloralWhite
             };
+            menuBar.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            menuBar.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            menuBar.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(8, GridUnitType.Star) });
+
+            var newGameButton = new Button
+            {
+                Content = "New game",
+                Margin = new Thickness(1)
+            };
+            Grid.SetColumn(newGameButton, 0);
+            
+            var undoButton = new Button
+            {
+                Content = "Undo move",
+                Margin = new Thickness(1)
+            };
+            Grid.SetColumn(undoButton, 1);
+
+            var board = new Board();
+
+            board.SetNewGameButtonTrigger(ref newGameButton);
+            board.SetUndoButtonTrigger(ref undoButton);
+
+            menuBar.Children.Add(newGameButton);
+            menuBar.Children.Add(undoButton);
+
             panel.Children.Add(menuBar);
             DockPanel.SetDock(menuBar, Dock.Top);
 
-            var board = new Board();
+            CommandBindings.Add(board.GetCommandBinding());
+
             panel.Children.Add(board.GetBoard());
 
             Content = panel;
