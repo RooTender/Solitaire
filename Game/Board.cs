@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Point = System.Drawing.Point;
@@ -12,6 +13,7 @@ namespace Solitaire.Game
         private readonly Grid _board;
         private readonly Field?[,] _fields;
 
+        private Window _statsWindow;
         private Stack<(Point, Point)> _gameHistory;
         private Point? _currentlyMarkedField;
 
@@ -20,6 +22,12 @@ namespace Solitaire.Game
             _board = new Grid();
             _fields = new Field?[BoardEdgeSize,BoardEdgeSize];
             _gameHistory = new Stack<(Point, Point)>();
+            _statsWindow = new Window
+            {
+                Width = 640,
+                Height = 480,
+                ResizeMode = ResizeMode.CanMinimize
+            };
 
             Build();
         }
@@ -120,11 +128,22 @@ namespace Solitaire.Game
             if (pawns == 1)
             {
                 // Win
-                throw new Exception("WIN!!!");
+                _statsWindow.Content = new UserControl1
+                {
+                    StatusText = { Text = "You won!!!" },
+                    DescriptionText = { Text = $"Left pawns: {pawns}" }
+                };
+                _statsWindow.Show();
             }
 
             // Lose
-            throw new Exception("LOSS!!!");
+            _statsWindow.Content = new UserControl1
+            {
+                StatusText = { Text = "You lost..." },
+                DescriptionText = { Text = $"Left pawns: {pawns}" }
+            };
+
+            _statsWindow.Show();
         }
 
         private bool HasLegalMove(Field field)
