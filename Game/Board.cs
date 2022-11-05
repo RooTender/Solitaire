@@ -14,12 +14,14 @@ namespace Solitaire.Game
         private readonly Grid _board;
         private readonly Field?[,] _fields;
         
-        private Stack<(Point, Point)> _gameHistory;
+        private readonly Stack<(Point, Point)> _gameHistory;
         private Point? _currentlyMarkedField;
 
         public Board()
         {
-            _board = new Grid();
+            _board = new Grid { ContextMenu = new ContextMenu() };
+            _board.ContextMenu.Items.Add(new MenuItem { Command = ApplicationCommands.Undo });
+
             _fields = new Field?[BoardEdgeSize,BoardEdgeSize];
             _gameHistory = new Stack<(Point, Point)>();
 
@@ -27,6 +29,11 @@ namespace Solitaire.Game
         }
 
         public Grid GetBoard() => _board;
+
+        public CommandBinding GetCommandBinding()
+        {
+            return new CommandBinding(ApplicationCommands.Undo, UndoCommandTrigger);
+        }
 
         public void SetNewGameButtonTrigger(ref Button newGameButton)
         {
@@ -47,6 +54,11 @@ namespace Solitaire.Game
         }
 
         private void UndoMoveTrigger(object sender, RoutedEventArgs e)
+        {
+            UndoMove();
+        }
+
+        private void UndoCommandTrigger(object sender, ExecutedRoutedEventArgs e)
         {
             UndoMove();
         }

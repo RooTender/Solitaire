@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using JetBrains.Annotations;
 using Solitaire.Game;
@@ -57,6 +58,8 @@ namespace Solitaire
 
             panel.Children.Add(menuBar);
             DockPanel.SetDock(menuBar, Dock.Top);
+
+            CommandBindings.Add(board.GetCommandBinding());
 
             panel.Children.Add(board.GetBoard());
 
