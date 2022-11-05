@@ -30,18 +30,8 @@ namespace Solitaire.Game
         {
             for (var column = 0; column < BoardEdgeSize; ++column)
             {
-                _board.ColumnDefinitions.Add(new ColumnDefinition
-                {
-                    Name = "col" + column
-                });
-            }
-
-            for (var row = 0; row < BoardEdgeSize; ++row)
-            {
-                _board.RowDefinitions.Add(new RowDefinition
-                {
-                    Name = "row" + row
-                });
+                _board.ColumnDefinitions.Add(new ColumnDefinition());
+                _board.RowDefinitions.Add(new RowDefinition());
             }
 
             for (var y = 0; y < BoardEdgeSize; ++y)
