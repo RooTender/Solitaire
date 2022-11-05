@@ -28,6 +28,54 @@ namespace Solitaire.Game
 
         public Grid GetBoard() => _board;
 
+        public void SetNewGameButtonTrigger(ref Button newGameButton)
+        {
+            newGameButton.Click += NewGameTrigger;
+        }
+
+        public void SetUndoButtonTrigger(ref Button undoButton)
+        {
+            undoButton.Click += UndoMoveTrigger;
+        }
+
+        private void NewGameTrigger(object sender, RoutedEventArgs e)
+        {
+            while (_gameHistory.Count > 0)
+            {
+                UndoMove();
+            }
+        }
+
+        private void UndoMoveTrigger(object sender, RoutedEventArgs e)
+        {
+            UndoMove();
+        }
+
+        private void UndoMove()
+        {
+            if (_gameHistory.Count == 0) return;
+
+            foreach (var field in _fields)
+            {
+                if (field is { State: FieldState.Marked })
+                {
+                    field.State = FieldState.Occupied;
+                }
+            }
+
+            var (a, b) = _gameHistory.Peek();
+
+            var midPoint = new Point(
+                (a.X + b.X) / 2,
+                (a.Y + b.Y) / 2);
+
+            _fields[a.X, a.Y]!.State = FieldState.Occupied;
+            _fields[midPoint.X, midPoint.Y]!.State = FieldState.Occupied;
+            _fields[b.X, b.Y]!.State = FieldState.Available;
+
+            _gameHistory.Pop();
+        }
+
         private void Build()
         {
             for (var column = 0; column < BoardEdgeSize; ++column)
