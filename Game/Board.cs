@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,8 +13,7 @@ namespace Solitaire.Game
         private const uint BoardEdgeSize = 7;
         private readonly Grid _board;
         private readonly Field?[,] _fields;
-
-        private Window _statsWindow;
+        
         private Stack<(Point, Point)> _gameHistory;
         private Point? _currentlyMarkedField;
 
@@ -22,12 +22,6 @@ namespace Solitaire.Game
             _board = new Grid();
             _fields = new Field?[BoardEdgeSize,BoardEdgeSize];
             _gameHistory = new Stack<(Point, Point)>();
-            _statsWindow = new Window
-            {
-                Width = 640,
-                Height = 480,
-                ResizeMode = ResizeMode.CanMinimize
-            };
 
             Build();
         }
@@ -72,6 +66,11 @@ namespace Solitaire.Game
 
         private void OnClick(object sender, MouseButtonEventArgs e)
         {
+            if (CheckGameState())
+            {
+                return;
+            }
+
             foreach (var field in _fields)
             {
                 if (field == null || !field.IsSelected())
@@ -107,7 +106,7 @@ namespace Solitaire.Game
             }
         }
 
-        private void CheckGameState()
+        private bool CheckGameState()
         {
             var pawns = 0;
             foreach (var field in _fields)
@@ -121,29 +120,44 @@ namespace Solitaire.Game
 
                 if (HasLegalMove(field))
                 {
-                    return;
+                    return false;
                 }
             }
+
+            if (Application.Current.Windows.Cast<Window>().Any(x => x.Title == "Stats"))
+            {
+                return true;
+            }
+
+            var statsWindow = new Window
+            {
+                Title = "Stats",
+                Width = 640,
+                Height = 480,
+                ResizeMode = ResizeMode.CanMinimize
+            };
 
             if (pawns == 1)
             {
                 // Win
-                _statsWindow.Content = new UserControl1
+                statsWindow.Content = new UserControl1
                 {
                     StatusText = { Text = "You won!!!" },
                     DescriptionText = { Text = $"Left pawns: {pawns}" }
                 };
-                _statsWindow.Show();
+            }
+            else
+            {
+                // Lose
+                statsWindow.Content = new UserControl1
+                {
+                    StatusText = { Text = "You lost..." },
+                    DescriptionText = { Text = $"Left pawns: {pawns}" }
+                };
             }
 
-            // Lose
-            _statsWindow.Content = new UserControl1
-            {
-                StatusText = { Text = "You lost..." },
-                DescriptionText = { Text = $"Left pawns: {pawns}" }
-            };
-
-            _statsWindow.Show();
+            statsWindow.Show();
+            return true;
         }
 
         private bool HasLegalMove(Field field)
