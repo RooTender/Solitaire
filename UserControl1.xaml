@@ -6,6 +6,33 @@
              xmlns:local="clr-namespace:Solitaire"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ControlTemplate x:Key="EllipseBtn" TargetType="Button">
+            <Grid>
+                <Ellipse x:Name="buttonBackground" Fill="{TemplateBinding Background}" Stroke="{TemplateBinding Foreground}">
+                    <Ellipse.Triggers>
+                        <EventTrigger RoutedEvent="Loaded">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="buttonBackground" 
+                                        Storyboard.TargetProperty="Opacity"
+                                        From="1.0" To="0.0" Duration="0:0:5" 
+                                        AutoReverse="True" RepeatBehavior="Forever" DecelerationRatio="1" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Ellipse.Triggers>
+                </Ellipse>
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="Fill" TargetName="buttonBackground" Value="AliceBlue"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </UserControl.Resources>
     <Grid>
         <TextBlock Name="StatusText" HorizontalAlignment="Center" Margin="0,0,0,200" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Center" FontSize="30"/>
         <TextBlock Name="DescriptionText" HorizontalAlignment="Center" Margin="0,0,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Center" FontSize="30"/>
@@ -19,7 +46,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Grid.Row="1" Name="OkButton" Content="Ok" Margin="10" FontSize="20"/>
+            <Button Template="{StaticResource EllipseBtn}" Grid.Column="0" Grid.Row="1" Name="OkButton" Content="Ok" Margin="10" FontSize="20"/>
         </Grid>
     </Grid>
 </UserControl>

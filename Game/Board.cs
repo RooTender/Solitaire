@@ -136,7 +136,7 @@ namespace Solitaire.Game
                 Height = 480,
                 ResizeMode = ResizeMode.CanMinimize
             };
-
+            
             if (pawns == 1)
             {
                 // Win
